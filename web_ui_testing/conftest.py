@@ -7,11 +7,13 @@ from datetime import datetime
 from pathlib import Path
 import os
 
+
 def pytest_addoption(parser):
     ''' This function adds a argument to choose the broweser '''
     parser.addoption(
         "--browser_name", action="store", default="chrome"
     )
+
 
 @pytest.fixture(scope="class")
 def setup(request):
@@ -47,6 +49,7 @@ def setup(request):
     yield
     driver.close()
 
+
 reports_dir = ''
 def create_report_folder():
     ''' Creates a report folder with the datetime stamp '''
@@ -59,6 +62,7 @@ def create_report_folder():
         reports_dir = Path(config.REPORT_FOLDER)
         if not os.path.exists(reports_dir):
             reports_dir.mkdir(parents=True, exist_ok=False)
+
 
 @pytest.hookimpl(tryfirst=True)
 def pytest_configure(config):
@@ -76,17 +80,20 @@ from datetime import datetime
 from py.xml import html
 import pytest
 
+
 def pytest_html_results_table_header(cells):
     ''' Adds two columns (Description and time) to the report table '''
     cells.insert(2, html.th('Description'))
     cells.insert(3, html.th('Time', class_='sortable time', col='time'))
     cells.pop()
 
+
 def pytest_html_results_table_row(report, cells):
     ''' Adds row two column values to the row '''
     cells.insert(2, html.td("report.description"))
     cells.insert(3, html.td(datetime.utcnow(), class_='col-time'))
     cells.pop()
+
 
 @pytest.mark.hookwrapper
 def pytest_runtest_makereport(item):
@@ -110,6 +117,7 @@ def pytest_runtest_makereport(item):
                 extra.append(pytest_html.extras.html(html))
         report.extra = extra
 
+
 def _capture_screenshot(name):
     ''' Saves the captured screenshot to the report directory '''
     global reports_dir
@@ -122,6 +130,7 @@ def _capture_screenshot(name):
         driver.get_screenshot_as_file(reports_dir+'/'+name)
     except Exception as e:
         print(e)
+
 
 def pytest_html_report_title(report):
     ''' Adds title to the report '''
